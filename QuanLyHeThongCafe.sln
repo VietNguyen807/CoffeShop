@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32510.428
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuanLyCafe", "QuanLyHeThongCafe\QuanLyCafe.csproj", "{1D400713-5F2A-4A95-932E-DB6886CE36D1}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "HTCF", "C:\Users\ADMIN\Desktop\HTCF\HTCF.vdproj", "{97D6F5B5-1635-423D-8793-A191FD8AB5FF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1D400713-5F2A-4A95-932E-DB6886CE36D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D400713-5F2A-4A95-932E-DB6886CE36D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D400713-5F2A-4A95-932E-DB6886CE36D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D400713-5F2A-4A95-932E-DB6886CE36D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97D6F5B5-1635-423D-8793-A191FD8AB5FF}.Debug|Any CPU.ActiveCfg = Debug
+		{97D6F5B5-1635-423D-8793-A191FD8AB5FF}.Release|Any CPU.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F00619DE-D32F-4558-BEAF-5FE754F556F9}
+	EndGlobalSection
+EndGlobal

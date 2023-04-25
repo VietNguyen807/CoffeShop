@@ -1,0 +1,132 @@
+﻿CREATE DATABASE DataQuanLyCafe
+GO
+USE  DataQuanLyCafe
+GO
+CREATE TABLE NGUOIDUNG
+(
+     TenDangNhap NVARCHAR(100) PRIMARY KEY,
+	 HoTen NVARCHAR(100) NOT NULL DEFAULT N'Chưa có tên',
+	 MatKhau NVARCHAR(100) NOT NULL DEFAULT N'12345678',
+	 LoaiTaiKhoan INT NOT NULL DEFAULT 0
+)
+GO
+CREATE TABLE BAN
+(
+     MaBan INT IDENTITY  PRIMARY KEY,
+	 TenBan NVARCHAR(100) NOT NULL DEFAULT N'Chưa đặt tên',
+	 TrangThai INT NOT NULL DEFAULT 0
+)
+GO
+CREATE TABLE MONAN
+(
+     MaMon INT IDENTITY  PRIMARY KEY,
+	 TenMon NVARCHAR(100) NOT NULL DEFAULT N'Chưa đặt tên',
+	 Gia INT NOT NULL DEFAULT 1000
+)
+GO
+CREATE TABLE HOADON
+(
+     MaHD INT IDENTITY  PRIMARY KEY,
+	 TrangThai INT NOT NULL DEFAULT 0,
+	 MaBan INT NOT NULL,
+	 TenDangNhap NVARCHAR(100) NOT NULL,
+	 FOREIGN KEY (MaBan) REFERENCES dbo.BAN(MaBan),
+	 FOREIGN KEY (TenDangNhap) REFERENCES dbo.NGUOIDUNG(TenDangNhap)
+)
+GO
+
+CREATE TABLE CT_HOADON
+(
+     MaCT_HD INT IDENTITY  PRIMARY KEY,
+	 MaHD INT NOT NULL,
+	 MaMon INT NOT NULL,
+	 SoLuong INT NOT NULL DEFAULT 0
+	 FOREIGN KEY (MaHD) REFERENCES dbo.HOADON(MaHD),
+	 FOREIGN KEY (MaMon) REFERENCES dbo.MonAn(MaMon)
+)
+GO
+INSERT INTO NGUOIDUNG(TenDangNhap,HoTen,MatKhau,LoaiTaiKhoan) VALUES (N'tkadmin',N'Trần Văn An',N'12345678',1)
+INSERT INTO NGUOIDUNG(TenDangNhap,HoTen,MatKhau,LoaiTaiKhoan) VALUES (N'tknhanvien01',N'Nguyễn Thị Lài',N'12345678',0)
+
+CREATE PROC timTaiKhoanTheoTenDangNhap
+@tenDangNhap nvarchar(100)
+AS
+BEGIN
+    SELECT  *
+	FROM dbo.NGUOIDUNG 
+	WHERE @tenDangNhap=NGUOIDUNG.TenDangNhap
+END
+GO
+
+DECLARE @i INT =1
+WHILE @i<=15
+BEGIN
+    INSERT dbo.BAN(TenBan,TrangThai) VALUES(N'Bàn '+CAST(@i AS nvarchar(100)),0)
+	SET @i=@i+1
+END
+GO
+
+CREATE PROC layDanhSachBan
+AS 
+SELECT *FROM dbo.BAN
+GO
+
+
+
+CREATE PROC chenHoaDon
+@maBan INT,@tenDangNhap NVARCHAR(100)
+AS
+BEGIN
+    INSERT INTO dbo.HOADON(MaBan,TenDangNhap) VALUES (@maBan,@tenDangNhap)
+END
+GO
+
+CREATE PROC chenCT_HoaDon
+@maHoaDon INT,@maMon INT,@soLuong INT
+AS
+BEGIN
+    DECLARE @dem INT;
+	DECLARE @so INT=1;
+	SELECT @dem=MaCT_HD, @so=dbo.CT_HOADON.SoLuong FROM dbo.CT_HOADON WHERE MaHD=@maHoaDon AND MaMon=@maMon
+	IF(@dem>0)
+	BEGIN
+	    DECLARE @kq INT =@so+@soLuong;
+		if(@kq>0)
+	        UPDATE dbo.CT_HOADON SET SoLuong=@so+@soLuong WHERE @maMon=MaMon
+		ELSE
+		    DELETE dbo.CT_HOADON WHERE @maMon=MaMon AND @maHoaDon=MaHD
+	END
+	ELSE
+	BEGIN
+	    if(@soLuong>0)
+	    INSERT INTO dbo.CT_HOADON(MaHD,MaMon,SoLuong) VALUES (@maHoaDon,@maMon,@soLuong)
+	END
+END
+GO
+
+CREATE TRIGGER CapNhatCT_HoaDon
+ON dbo.CT_HOADON FOR UPDATE, INSERT
+AS
+BEGIN
+     DECLARE @maHoaDon INT
+	 DECLARE @maBan INT
+	 SELECT @maHoaDon =MaHD FROM Inserted
+	 SELECT @maBan = MaBan FROM dbo.HOADON WHERE MaHD=@maHoaDon AND HOADON.TrangThai=0
+	 UPDATE dbo.BAN SET TrangThai=1 WHERE MaBan=@maBan
+END
+GO
+
+CREATE TRIGGER CapNhatHoaDon
+ON dbo.HOADON FOR UPDATE
+AS
+BEGIN
+     DECLARE @maHoaDon INT
+	 SELECT @maHoaDon =MaHD FROM Inserted
+	 DECLARE @maBan INT
+	 SELECT @maBan = MaBan FROM dbo.HOADON WHERE MaHD=@maHoaDon
+	 DECLARE @soLuong INT =0
+	 SELECT @soLuong=COUNT(*) FROM dbo.HOADON WHERE @maBan=MaBan AND TrangThai=0
+	 IF(@soLuong=0)
+	     UPDATE dbo.BAN SET TrangThai=0 WHERE @maBan=MaBan;
+END
+GO
